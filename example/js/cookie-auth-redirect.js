@@ -1,5 +1,7 @@
 var hawk = require('hawk/client'),
-    redirectto = decodeURI(location.search.slice(1)) || '/'
+    redirectto = decodeURI(location.search.slice(1)) ||
+      (0 !== location.pathname.indexOf('/tryagain')? location.pathname: false) ||
+      '/'
 
 var header = hawk.client.header(location.origin + redirectto, 'GET', {
   credentials: JSON.parse(localStorage.getItem('credentials')) //, ext: 'hey'

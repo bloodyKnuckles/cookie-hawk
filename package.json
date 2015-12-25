@@ -7,6 +7,8 @@
     "example": "example"
   },
   "dependencies": {
+    "browserify": "^12.0.1",
+    "combine-streams": "^1.0.0",
     "cookie-object": "^0.1.1",
     "hawk": "^4.0.1"
   },
