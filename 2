@@ -38,7 +38,11 @@ var handler = function (req, res) {
         }
 
         res.writeHead(200, {'Content-Type': 'text/html'})
-        res.write('<script>localStorage.setItem("credentials", \'' + JSON.stringify(internals.credentials['dh37fgj492je']) + '\')</script>')
+        res.write(
+          '<script>localStorage.setItem("credentials", \'' +
+          JSON.stringify(internals.credentials['dh37fgj492je']) +
+          '\')</script>'
+        )
         res.write('<script src="/js/cookie-auth-redirect.js"></script>')
         res.end()
       }

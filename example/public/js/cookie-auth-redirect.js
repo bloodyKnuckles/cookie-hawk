@@ -790,14 +790,13 @@ if (typeof module !== 'undefined' && module.exports) {
 var hawk = require('hawk/client'),
     redirectto = decodeURI(location.search.slice(1)) || '/'
 
-var header = hawk.client.header('http://localhost:8000/', 'GET', {
+var header = hawk.client.header(location.origin + redirectto, 'GET', {
   credentials: JSON.parse(localStorage.getItem('credentials')) //, ext: 'hey'
 })
 
 var cookieopts = {
   method: 'GET',
-  //url: redirectto,
-  url: '/',
+  url: redirectto,
   headers: {
     host: location.hostname + (location.port ? ':' + location.port: ''),
     authorization: header.field

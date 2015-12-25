@@ -8,7 +8,7 @@ can be used with Hawk.
 
 Under development.
 
-### install
+### install example
 ```
 git clone https://github.com/bloodyKnuckles/cookie-hawk.git
 ```
