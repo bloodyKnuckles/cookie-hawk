@@ -5,6 +5,8 @@ header authentication is not available. This allows Hawk authentication with pag
 reloads resulting from link clicks and form submissions. When using request headers 
 to transmit authentication it appears only XHR can be used with Hawk.
 
+[Hawk](https://github.com/hueniverse/hawk)
+
 Under development.
 
 ### install
