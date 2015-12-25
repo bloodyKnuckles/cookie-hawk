@@ -1,42 +1,33 @@
-'use strict';
+var http = require('http')
+var hawk = require('hawk')
 
-// Load modules
-
-const Http = require('http');
-const Hawk = require('../lib');
-
-const body = require('body/any')
-const fs = require('fs')
-const cookieObject = require('cookie-object')
+var fs = require('fs')
+var body = require('body/any')
+var cookieObject = require('cookie-object')
 
 // Declare internals
-const internals = {
-    credentials: {
-        dh37fgj492je: {
-            id: 'dh37fgj492je',                                             // Required by Hawk.client.header
-            key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
-            algorithm: 'sha256',
-            user: 'webdude'
-        }
+var internals = {
+  credentials: {
+    dh37fgj492je: {
+      id: 'dh37fgj492je',
+      key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
+      algorithm: 'sha256',
+      user: 'webdude'
     }
-};
-
-// Credentials lookup function
-const credentialsFunc = function (id, callback) {
-  return callback(null, internals.credentials[id]);
-};
+  }
+}
 
 
-// Create HTTP server
-const handler = function (req, res) {
+// Create HTTP server handler
+var handler = function (req, res) {
   var requrlarr = req.url.split('?')
   if ( 'POST' === req.method && '/login' === requrlarr[0] && undefined === requrlarr[1] ) {
     body(req, res, function (err, postvars) {
       if ( validateUser({uname:postvars.uname, pword:postvars.pword}) ) {
 
-        const header = Hawk.client.header('http://localhost:8000/', 'GET', {
+        var header = hawk.client.header('http://localhost:8000/', 'GET', {
           credentials: internals.credentials['dh37fgj492je'] //, ext: 'heyther' 
-        });
+        })
         var cookieopts = {
           method: 'GET',
           url: '/',
@@ -81,7 +72,7 @@ const handler = function (req, res) {
       cookieObject.getCookieObject(req.headers.cookie, 'token') ||
       {}
 
-    Hawk.server.authenticate(reqheaders, credentialsFunc, {}, (err, credentials, artifacts) => {
+    hawk.server.authenticate(reqheaders, credentialsFunc, {}, function (err, credentials, artifacts) {
       var redirectto = cookieObject.getCookieObject(req.headers.cookie, 'redirectto')
 
       if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf('/login') ) {
@@ -94,22 +85,26 @@ const handler = function (req, res) {
       }
       else {
         res.setHeader('Set-Cookie', 'redirectto=; expires=Thu, 01 Jan 1970 00:00:00 GMT;')
-        const payload = (!err ? 'Hello ' + credentials.user + ' ' + (artifacts.ext || '') : 'Shoosh!');
-        const headers = {
+        var payload = (!err ? 'Hello ' + credentials.user + ' ' + (artifacts.ext || '') : 'Shoosh!')
+        var headers = {
           'Content-Type': 'text/plain',
-          'Server-Authorization': Hawk.server.header(credentials, artifacts, { payload: payload, contentType: 'text/plain' })
-        };
-        res.writeHead(!err ? 200 : 401, headers);
-        res.end(payload);
+          'Server-Authorization': hawk.server.header(credentials, artifacts, { payload: payload, contentType: 'text/plain' })
+        }
+        res.writeHead(!err ? 200 : 401, headers)
+        res.end(payload)
       }
-    });
+    })
   }
-};
+}
 
-Http.createServer(handler).listen(8000, '127.0.0.1');
+http.createServer(handler).listen(8000, 'localhost')
+
+var credentialsFunc = function (id, callback) {
+  return callback(null, internals.credentials[id])
+}
 
 function validateUser(user) {
-  return !!('jay' === user.uname && '4' === user.pword )
+  return !!('j' === user.uname && '4' === user.pword )
 }
 
 function redirect (res, where) {
@@ -120,6 +115,6 @@ function redirect (res, where) {
 function responseStream (res, resource, type) {
   type = type || 'text/html'
   res.writeHead(200, {'Content-Type': type }) 
-  fs.createReadStream(__dirname + resource).pipe(res)
+  fs.createReadStream(__dirname + '/public' + resource).pipe(res)
 }
 

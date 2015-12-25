@@ -1,4 +1,4 @@
-var hawk = require('../'),
+var hawk = require('hawk/client'),
     redirectto = decodeURI(location.search.slice(1)) || '/'
 
 var header = hawk.client.header('http://localhost:8000/', 'GET', {

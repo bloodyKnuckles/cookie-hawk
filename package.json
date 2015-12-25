@@ -1,0 +1,35 @@
+{
+  "name": "cookie-hawk",
+  "version": "0.1.0",
+  "description": "Wrapper for hawk authentication scheme that implements cookie transmission of authentication.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "dependencies": {
+    "cookie-object": "^0.1.1",
+    "hawk": "^4.0.1"
+  },
+  "devDependencies": {
+    "body": "^5.1.0",
+    "tape": "^4.3.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bloodyKnuckles/cookie-hawk.git"
+  },
+  "keywords": [
+    "hawk",
+    "authentication",
+    "cookie"
+  ],
+  "author": "Jay Scott ANDERSON",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bloodyKnuckles/cookie-hawk/issues"
+  },
+  "homepage": "https://github.com/bloodyKnuckles/cookie-hawk#readme"
+}
