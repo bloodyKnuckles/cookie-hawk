@@ -1,8 +1,9 @@
 # cookie-hawk
 
-A wrapper to use cookies to transmit Hawk authentication information which allows 
-page reloads resulting from link clicks and form submissions. When using request 
-headers to transmit authentication it appears only XHR can be used with Hawk.
+A wrapper using cookies to transmit Hawk authentication information when request 
+header authentication is not available. This allows Hawk authentication with page 
+reloads resulting from link clicks and form submissions. When using request headers 
+to transmit authentication it appears only XHR can be used with Hawk.
 
 Under development.
 
