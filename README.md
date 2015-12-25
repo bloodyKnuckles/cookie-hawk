@@ -2,7 +2,7 @@
 
 A wrapper using cookies to transmit Hawk authentication information when request 
 header authentication is not available, such as with page reloads resulting from 
-link clicks and form submissions. When using request headers to transmit 
+link clicks and form submissions. When using request headers exclusively to transmit 
 authentication it appears only XHR can be used with Hawk.
 
 [Hawk](https://github.com/hueniverse/hawk)
