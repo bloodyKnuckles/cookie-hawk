@@ -6,16 +6,16 @@ headers to transmit authentication it appears only XHR can be used with Hawk.
 
 Under development.
 
-### example
+### install
+```
+git clone https://github.com/bloodyKnuckles/cookie-hawk.git
+```
+
+### run example
 ```
 node example/server.js
 ```
 ...then load http://localhost:8000/
-
-### install
-```
-npm install cookie-hawk
-```
 
 ### license
 
