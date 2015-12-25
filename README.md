@@ -15,7 +15,7 @@ git clone https://github.com/bloodyKnuckles/cookie-hawk.git
 ```
 node example/server.js
 ```
-...then load http://localhost:8000/
+...then load [http://localhost:8000/](http://localhost:8000/)
 
 ### license
 
