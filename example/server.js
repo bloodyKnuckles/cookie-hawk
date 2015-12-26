@@ -14,39 +14,24 @@ var internals = {
       id: 'dh37fgj492je',
       key: 'werxhqb98rpaxn39848xrunpaw3489ruxnpa98w4rxn',
       algorithm: 'sha256',
-      user: 'webdude'
+      user: 'j'
     }
   }
 }
 
-
-// Create HTTP server handler
+// HTTP server handler
 var handler = function (req, res) {
   var requrlarr = req.url.split('?')
   if ( 'POST' === req.method && '/login' === requrlarr[0] && undefined === requrlarr[1] ) {
     body(req, res, function (err, postvars) {
-      if ( validateUser({uname:postvars.uname, pword:postvars.pword}) ) {
-
-        var header = hawk.client.header('http://localhost:8000/', 'GET', {
-          credentials: internals.credentials['dh37fgj492je'] //, ext: 'heyther' 
-        })
-        var cookieopts = {
-          method: 'GET',
-          url: '/',
-          headers: {
-            host: 'localhost:8000',
-            authorization: header.field
-          }
-        }
-        cookieAuthRedirect()
+      var id
+      if ( id = validateUser({uname:postvars.uname, pword:postvars.pword}) ) {
+        authRedirect({id:id})
       }
       else {
-        responseStream('/login')
+        responseStream('/login.html')
       }
     })
-  }
-  else if ( '/js/cookie-auth-redirect.js' === req.url ) {
-    responseStream('/js/cookie-auth-redirect.js', 'text/javascript')
   }
   else {
     var reqheaders = req.headers.authorization ||
@@ -58,11 +43,11 @@ var handler = function (req, res) {
 
       if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf('/login') ) {
         res.setHeader('Set-Cookie', 'redirectto=; expires=' + Date(0) + ';')
-        responseStream('/cookielogin.html')
+        responseStream('/login.html')
       }
-      else if ( err ) {
+      else if ( err ) { // && artifacts ) {
         res.setHeader('Set-Cookie', 'redirectto=/login;')
-        cookieAuthRedirect()
+        authRedirect()
       }
       else {
         res.setHeader('Set-Cookie', 'redirectto=; expires=Thu, 01 Jan 1970 00:00:00 GMT;')
@@ -77,25 +62,17 @@ var handler = function (req, res) {
     })
   }
 
-  function cookieAuthRedirect() {
+  function authRedirect(setcred) {
+    var credentials = setcred && getCredentials(setcred.id)
+    var setcredstr = credentials
+      ? '<script>localStorage.setItem("credentials", \'' +
+        JSON.stringify(credentials) +
+        '\')</script>': ''
     var bb = browserify()
     bb.add('./example/js/cookie-auth-redirect.js')
     res.writeHead(200, {'Content-Type': 'text/html'})
-    //res.write(
-    //  '<script>localStorage.setItem("credentials", \'' +
-    //  JSON.stringify(internals.credentials['dh37fgj492je']) +
-    //  '\')</script>'
-    //)
-    //res.write('<script src="/js/cookie-auth-redirect.js"></script>')
-    //res.write('<script>')
-    //res.write(fs.readFileSync(__dirname + '/public/js/cookie-auth-redirect.js'))
-    //res.write('</script>')
-    //res.end()
     combine().
-      append('<script>localStorage.setItem("credentials", \'' + 
-        JSON.stringify(internals.credentials['dh37fgj492je']) +
-        '</script><script>'
-      ).
+      append(setcredstr + '<script>').
       append(bb.bundle()).
       append('</script>').
       append(null).
@@ -108,12 +85,21 @@ var handler = function (req, res) {
     fs.createReadStream(__dirname + '/public' + resource).pipe(res)
   }
 
-  function validateUser(user) {
-    return !!('j' === user.uname && '4' === user.pword )
+  function validateUser (user) {
+    if ( !!('j' === user.uname && '4' === user.pword ) ) {
+      return Object.keys(internals.credentials).reduce(function (prev, next) {
+        return user.uname === internals.credentials[next].user? next: prev
+      }, '')
+    }
+    return undefined
+  }
+
+  function getCredentials (id) {
+    return internals.credentials[id || '']
   }
 
   function credentialsFunc (id, callback) {
-    return callback(null, internals.credentials[id])
+    return callback(null, getCredentials(id))
   }
 }
 
