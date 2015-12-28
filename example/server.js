@@ -6,6 +6,19 @@ var fs = require('fs')
 var body = require('body/any')
 var cookieObject = require('cookie-object')
 
+function validateUser (user) {
+  if ( !!('j' === user.uname && '4' === user.pword ) ) {
+    return Object.keys(cookieHawk.getCredentials()).reduce(function (prev, next) {
+      return user.uname === cookieHawk.getCredentials(next).user? next: prev
+    }, '')
+  }
+  return undefined
+}
+
+function credentialsFunc (id, callback) {
+  return callback(null, cookieHawk.getCredentials(id))
+}
+
 // HTTP server handler
 var handler = function (req, res) {
   var requrlarr = req.url.split('?')
@@ -13,7 +26,6 @@ var handler = function (req, res) {
     body(req, res, function (err, postvars) {
       var id
       if ( id = validateUser({uname:postvars.uname, pword:postvars.pword}) ) {
-        //authRedirect({id:id})
         cookieHawk.clientSendCredentials(res, {id:id})
       }
       else {
@@ -35,7 +47,6 @@ var handler = function (req, res) {
       }
       else if ( err ) { // && artifacts ) {
         res.setHeader('Set-Cookie', 'redirectto=/login;')
-        //authRedirect()
         cookieHawk.clientSendCredentials(res)
       }
       else {
@@ -55,19 +66,6 @@ var handler = function (req, res) {
     type = type || 'text/html'
     res.writeHead(200, {'Content-Type': type }) 
     fs.createReadStream(__dirname + '/public' + resource).pipe(res)
-  }
-
-  function validateUser (user) {
-    if ( !!('j' === user.uname && '4' === user.pword ) ) {
-      return Object.keys(cookieHawk.getCredentials()).reduce(function (prev, next) {
-        return user.uname === cookieHawk.getCredentials(next).user? next: prev
-      }, '')
-    }
-    return undefined
-  }
-
-  function credentialsFunc (id, callback) {
-    return callback(null, cookieHawk.getCredentials(id))
   }
 }
 
