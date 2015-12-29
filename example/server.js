@@ -1,4 +1,4 @@
-var cookieHawk = require('../')
+var cookieHawk = require('../')()
 var http = require('http') // USE HTTPS FOR PRODUCTION!
 
 var fs = require('fs')
