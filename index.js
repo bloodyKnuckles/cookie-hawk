@@ -33,7 +33,7 @@ var cookieHawk = {
       var redirectto = cookieObject.getCookieObject(req.headers.cookie, 'redirectto')
 
       if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf('/login') ) {
-        deleteCookie(res, 'redirecto')
+        deleteCookie(res, 'redirectto')
         responseStream('/login.html')
       }
       else if ( err ) { // && artifacts ) {
@@ -41,7 +41,7 @@ var cookieHawk = {
         cookieHawk.clientSendAuth(res)
       }
       else {
-        deleteCookie(res, 'redirecto')
+        deleteCookie(res, 'redirectto')
         var payload = 'Hello ' + credentials.user + ' ' + (artifacts.ext || '')
         var headers = {
           'Content-Type': 'text/plain',
@@ -86,3 +86,4 @@ function responseStream (res, resource, type) {
 function deleteCookie (res, name) {
   res.setHeader('Set-Cookie', name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT;')
 }
+
