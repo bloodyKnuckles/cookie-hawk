@@ -24,12 +24,14 @@ var handler = function (req, res) {
       }
       else {
         cookieHawk.auth(req, res, function () {
+          res.end('success')
         })
       }
     })
   }
   else {
     cookieHawk.auth(req, res, function () {
+      res.end('success')
     })
   }
 

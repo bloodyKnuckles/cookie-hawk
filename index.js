@@ -26,7 +26,8 @@ module.exports = function (opts) {
 
   var cookieHawk = {
 
-    auth: function (req, res, callback) {
+    auth: function (req, res, payload, successCB) {
+      successCB = successCB || payload
       var reqheaders = req.headers.authorization ||
         cookieObject.getCookieObject(req.headers.cookie, 'hawkauth') ||
         {}
@@ -36,7 +37,7 @@ module.exports = function (opts) {
 
         if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf('/login') ) {
           deleteCookie(res, 'redirectto')
-          opts.noauthresponse(req, res)
+          opts.noAuthResponse(req, res)
         }
         else if ( err ) { // && artifacts ) {
           setCookie(res, 'redirectto', '/login', 5) // minutes
@@ -44,13 +45,13 @@ module.exports = function (opts) {
         }
         else {
           deleteCookie(res, 'redirectto')
-          var payload = 'Hello ' + credentials.user + ' ' + (artifacts.ext || '')
+          var serverauthobj = {}
+          if ( 'function' !== typeof payload ) { serverauthobj.payload = payload }
           var headers = {
-            'Content-Type': 'text/plain',
-            'Server-Authorization': hawk.server.header(credentials, artifacts, { payload: payload, contentType: 'text/plain' })
+            'Server-Authorization': hawk.server.header(credentials, artifacts, serverauthobj)
           }
           res.writeHead(200, headers)
-          res.end(payload)
+          successCB()
         }
       })
     },
