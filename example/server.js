@@ -1,4 +1,4 @@
-var cookieHawk = require('../')()
+var cookieHawk = require('../')
 var http = require('http') // USE HTTPS FOR PRODUCTION!
 
 var fs = require('fs')
@@ -6,18 +6,23 @@ var body = require('body/any')
 
 http.createServer(function (req, res) {
   var requrlarr = req.url.split('?')
-  if ( 'POST' === req.method && '/login' === requrlarr[0] ) {
+  var cH = cookieHawk({
+    login: { urlpath: '/login', filepath: '/login.html' }
+  })
+
+  if ( 'POST' === req.method && cH.opts.login.urlpath === requrlarr[0] ) {
     body(req, res, function (err, postvars) {
       if ( validateUser({uname:postvars.uname, pword:postvars.pword}) ) {
-        cookieHawk.clientSendCredentials(res, postvars.uname)
+        cH.clientSendCredentials(res, postvars.uname)
       }
       else {
-        responseStream(res, '/login.html')
+        //responseStream(res, cH.opts.login.filepath)
+        cH.opts.noAuthResponse()
       }
     })
   }
   else {
-    cookieHawk.auth(req, res, function () {
+    cH.auth(req, res, function () {
       res.end('success')
     })
   }

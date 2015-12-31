@@ -17,14 +17,17 @@ var internals = {
 module.exports = function (opts) {
 
   opts = opts || {}
+  opts.login = opts.login || { urlpath: '/login', filepath: '/login.html' }
   opts.noAuthResponse = opts.noAuthResponse || function (req, res) {
-    responseStream(res, '/login.html')
+    responseStream(res, opts.login.filepath)
   }
   opts.credValidateRespond = opts.credValidateRespond || function (id, callback) {
     return callback(null, getCredentials(id))
   }
 
   var cookieHawk = {
+
+    opts: opts,
 
     auth: function (req, res, payload, successCB) {
       successCB = successCB || payload
@@ -35,12 +38,12 @@ module.exports = function (opts) {
       hawk.server.authenticate(reqheaders, opts.credValidateRespond, {}, function (err, credentials, artifacts) {
         var redirectto = cookieObject.getCookieObject(req.headers.cookie, 'redirectto')
 
-        if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf('/login') ) {
+        if ( err && 'string' === typeof redirectto && 0 === redirectto.indexOf(opts.login.urlpath) ) {
           deleteCookie(res, 'redirectto')
           opts.noAuthResponse(req, res)
         }
         else if ( err ) { // && artifacts ) {
-          setCookie(res, 'redirectto', '/login', 5) // minutes
+          setCookie(res, 'redirectto', opts.login.urlpath, 5) // minutes
           cookieHawk.clientSendAuth(res)
         }
         else {
@@ -57,15 +60,15 @@ module.exports = function (opts) {
     },
 
     clientSendCredentials: function (res, username) {
-      var id = Object.keys(cookieHawk.getCredentials()).reduce(function (prev, next) {
-        return username === cookieHawk.getCredentials(next).user? next: prev
+      var id = Object.keys(getCredentials()).reduce(function (prev, next) {
+        return username === getCredentials(next).user? next: prev
       }, '')
       var credentials = id && getCredentials(id)
       var setcredentialsstr = credentials
         ? '<script>localStorage.setItem("credentials", \'' +
           JSON.stringify(credentials) +
           '\')</script>': undefined
-      cookieHawk.clientSendAuth(res, id, setcredentialsstr)
+      cookieHawk.clientSendAuth(res, setcredentialsstr)
     },
 
     clientSendAuth: function (res, setcredentialsstr) {
